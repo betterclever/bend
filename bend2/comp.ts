@@ -90,10 +90,9 @@ type Fun = { n: number; h: HTerm | null; live: Dom[]; lays: Lay[]; ret: Lay };
 // Constants
 // =========
 
-// CLO_APPLY and IO_EMIT are runtime segments (~ keeps a file from declaring
-// them). FOLD_FUEL caps the nodes unfolds add to a segment; a spin of
-// SPIN_FAR characters is a device call (DFAR); a node past WIDE pads to its
-// size class.
+// CLO_APPLY and IO_EMIT are runtime segments (~ keeps files from declaring
+// them). FOLD_FUEL caps what unfolds add to a segment; a SPIN_FAR-char spin
+// is a device call (DFAR); a node past WIDE pads to its size class.
 
 const CLO_APPLY = "Clo~apply";
 
@@ -276,8 +275,8 @@ const OWNED = ["IO", ...RUNTIME_ADTS, "Nat", ...Object.keys(OPTIMIZED)];
 // ------
 
 // On Metal, sin, cos and tan are fast:: (same pixels), the rest precise::;
-// atan2_c99 answers libm's +-0 or +-pi at the origin, not NaN; U32_QUO
-// halves the dividend, as Metal folds one near 2^32 through an f32.
+// atan2_c99 is libm's +-0 or +-pi at the origin, not NaN; U32_QUO halves
+// the dividend, as Metal folds one near 2^32 through an f32.
 
 const SHIMS = "sqrt exp log log2 log10 sin cos tan pow fmod".split(" ")
   .map((n) => "#define " + n.padEnd(5) + ("sin cos tan".includes(n)
@@ -943,11 +942,10 @@ function ty_srcs(T: HTerm): void {
 // Lay
 // ===
 
-// An Array, an IO.OP and a datatype re-entering itself (maybe via a family)
-// are a box, as is a type former such as a function. A lay without arms is
-// W32, W64 or BOX. An Array cell takes its element type's open layout, so
-// callers agree; lay_el refuses an open one (a variable, hole, bodiless law
-// or family).
+// An Array, an IO.OP, a self-entering datatype (maybe via a family) and a
+// type former (a function, say) are a box. A lay without arms is W32, W64 or
+// BOX. An Array cell takes its element type's open layout, so callers agree;
+// lay_el refuses an open one (a variable, hole, bodiless law or family).
 
 function lay_of(A: HTerm | null): Lay {
   const t = ty_adt(A);
@@ -1237,8 +1235,7 @@ function mat_ops(eq: (k: Name) => string): string {
 
 // fun_of raises a def's arity by the lambdas its body opens past its
 // parameters under every arm. A def is flat if it and its callees have no
-// fork, no bang call and only tail self-calls. loop_of is its tail cycle
-// (Tarjan).
+// fork, no bang call and only tail self-calls; loop_of is its tail cycle.
 
 function fun_of(k: Name): Fun {
   return memo(FL.funs, k, () => {
@@ -2186,9 +2183,9 @@ function anf(t: HTerm, ty: HTerm | null = null): HTerm {
 // borrowed ones (a read asks a lend). A closure moves its captures into a
 // node. A jump's returns agree or are one word, else it is a cut. A fork
 // runs a join task and a task per call; in sequence one frame serves each
-// step. A self-jump reads its parameters back, keeping them typed in the
-// device's loop. A foreign def short of its continuation is an IO action.
-// A C table's F32 row is its bits (no JS number has a NaN payload).
+// step. A self-jump reads its parameters back, typed in the device's loop.
+// A foreign def short of its continuation is an IO action. A C table's F32
+// row is its bits (no JS number has a NaN payload).
 
 function emit_hold(sc: Scope, exprs: string[], k: string,
   ks?: Kind[]): string[] {
