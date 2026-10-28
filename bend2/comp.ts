@@ -1279,16 +1279,15 @@ function def_raise(t: HTerm, left: number): number {
   return s.$ === "Efq" ? Infinity : 0;
 }
 
-function def_foreign(tld: Bend.TLD | undefined):
-  tld is Bend.Def & { i: string[] } {
+function def_foreign(tld?: Bend.TLD): tld is Bend.Def & { i: string[] } {
   return tld?.$ === "Def" && tld.i !== undefined;
 }
 
-function done_live(tld: Bend.TLD | undefined): tld is Bend.Def {
+function done_live(tld?: Bend.TLD): tld is Bend.Def {
   return tld?.$ === "Def" && tld.v !== null;
 }
 
-function fun_runs(tld: Bend.TLD | undefined): tld is Bend.Def {
+function fun_runs(tld?: Bend.TLD): tld is Bend.Def {
   return done_live(tld) || def_foreign(tld);
 }
 
